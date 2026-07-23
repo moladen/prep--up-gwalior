@@ -1,0 +1,848 @@
+generator client {
+
+  provider = "prisma-client-js"
+
+}
+
+
+
+datasource db {
+
+  provider = "postgresql"
+
+  url      = env("DATABASE_URL")
+
+}
+
+
+
+model Admin {
+
+  id        String   @id @default(cuid())
+
+  name      String   @default("Admin")
+
+  email     String   @unique
+
+  password  String
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+}
+
+
+
+model Course {
+
+  id                    String   @id @default(cuid())
+
+  name                  String
+
+  slug                  String?  @unique
+
+  category              String
+
+  subCategory           String   @default("")
+
+  exam                  String   @default("")
+
+  overview              String   @default("")
+
+  fullName              String   @default("")
+
+  tagline               String   @default("")
+
+  highlights            String   @default("[]")
+
+  learningOutcomes      String   @default("[]")
+
+  demoVideoUrl          String   @default("")
+
+  eligibility           String   @default("[]")
+
+  examPattern           String   @default("[]")
+
+  syllabus              String   @default("[]")
+
+  duration              String   @default("")
+
+  batchTiming           String   @default("")
+
+  fees                  String   @default("{}")
+
+  faqs                  String   @default("[]")
+
+  facultyIds            String   @default("[]")
+
+  featuredImageUrl      String   @default("")
+
+  featuredImagePublicId String   @default("")
+
+  brochureUrl           String   @default("")
+
+  brochurePublicId      String   @default("")
+
+  isFeatured            Boolean  @default(false)
+
+  isPopular             Boolean  @default(false)
+
+  isNewBatch            Boolean  @default(false)
+
+  limitedSeats          Boolean  @default(false)
+
+  seatsRemaining        Int?
+
+  sortOrder             Int      @default(0)
+
+  status                String   @default("Draft")
+
+  createdAt             DateTime @default(now())
+
+  updatedAt             DateTime @updatedAt
+
+}
+
+
+
+model Category {
+
+  id          String   @id @default(cuid())
+
+  name        String   @unique
+
+  slug        String   @unique
+
+  description String   @default("")
+
+  sortOrder   Int      @default(0)
+
+  status      String   @default("Published")
+
+  createdAt   DateTime @default(now())
+
+  updatedAt   DateTime @updatedAt
+
+}
+
+
+
+model Faculty {
+
+  id             String   @id @default(cuid())
+
+  name           String
+
+  slug           String?  @unique
+
+  title          String   @default("")
+
+  qualification  String   @default("")
+
+  experience     String   @default("")
+
+  subjects       String   @default("[]")
+
+  specialization String   @default("")
+
+  bio            String   @default("")
+
+  imageUrl       String   @default("")
+
+  imagePublicId  String   @default("")
+
+  social         String   @default("{}")
+
+  status         String   @default("Published")
+
+  sortOrder      Int      @default(0)
+
+  createdAt      DateTime @default(now())
+
+  updatedAt      DateTime @updatedAt
+
+}
+
+
+
+model BlogPost {
+
+  id                 String    @id @default(cuid())
+
+  title              String
+
+  slug               String    @unique
+
+  excerpt            String    @default("")
+
+  content            String    @default("")
+
+  category           String    @default("")
+
+  coverImageUrl      String    @default("")
+
+  coverImagePublicId String    @default("")
+
+  author             String    @default("Prep Up Gwalior")
+
+  status             String    @default("Draft")
+
+  publishedAt        DateTime?
+
+  seoTitle           String    @default("")
+
+  seoDescription     String    @default("")
+
+  createdAt          DateTime  @default(now())
+
+  updatedAt          DateTime  @updatedAt
+
+}
+
+
+
+model Faq {
+
+  id        String   @id @default(cuid())
+
+  question  String
+
+  answer    String
+
+  category  String   @default("general")
+
+  courseId  String   @default("")
+
+  sortOrder Int      @default(0)
+
+  status    String   @default("Published")
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+}
+
+
+
+model Announcement {
+
+  id        String    @id @default(cuid())
+
+  message   String
+
+  link      String    @default("")
+
+  linkText  String    @default("Learn More")
+
+  status    String    @default("Published")
+
+  startsAt  DateTime?
+
+  endsAt    DateTime?
+
+  sortOrder Int       @default(0)
+
+  createdAt DateTime  @default(now())
+
+  updatedAt DateTime  @updatedAt
+
+}
+
+
+
+model HeroHighlight {
+
+  id          String   @id @default(cuid())
+
+  label       String
+
+  description String   @default("")
+
+  icon        String   @default("BookOpen")
+
+  link        String   @default("")
+
+  section     String   @default("")
+
+  status      String   @default("Published")
+
+  sortOrder   Int      @default(0)
+
+  createdAt   DateTime @default(now())
+
+  updatedAt   DateTime @updatedAt
+
+}
+
+
+
+model GalleryItem {
+
+  id            String   @id @default(cuid())
+
+  title         String   @default("")
+
+  imageUrl      String
+
+  imagePublicId String   @default("")
+
+  category      String   @default("")
+
+  status        String   @default("Published")
+
+  sortOrder     Int      @default(0)
+
+  createdAt     DateTime @default(now())
+
+  updatedAt     DateTime @updatedAt
+
+}
+
+
+
+model SuccessStory {
+
+  id            String   @id @default(cuid())
+
+  studentName   String
+
+  exam          String   @default("")
+
+  beforeText    String   @default("")
+
+  afterText     String   @default("")
+
+  year          String   @default("")
+
+  imageUrl      String   @default("")
+
+  imagePublicId String   @default("")
+
+  status        String   @default("Published")
+
+  createdAt     DateTime @default(now())
+
+  updatedAt     DateTime @updatedAt
+
+}
+
+
+
+model Enquiry {
+
+  id        String   @id @default(cuid())
+
+  name      String
+
+  email     String
+
+  phone     String
+
+  course    String   @default("")
+
+  message   String   @default("")
+
+  status    String   @default("New")
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+}
+
+
+
+model Result {
+
+  id            String   @id @default(cuid())
+
+  studentName   String
+
+  exam          String
+
+  score         String   @default("")
+
+  year          String   @default("")
+
+  isTopper      Boolean  @default(false)
+
+  beforeText    String   @default("")
+
+  afterText     String   @default("")
+
+  imageUrl      String   @default("")
+
+  imagePublicId String   @default("")
+
+  status        String   @default("Published")
+
+  createdAt     DateTime @default(now())
+
+  updatedAt     DateTime @updatedAt
+
+}
+
+
+
+model Testimonial {
+
+  id            String   @id @default(cuid())
+
+  name          String
+
+  course        String   @default("")
+
+  message       String
+
+  rating        Int      @default(5)
+
+  type          String   @default("text")
+
+  videoUrl      String   @default("")
+
+  imageUrl      String   @default("")
+
+  imagePublicId String   @default("")
+
+  isFeatured    Boolean  @default(false)
+
+  status        String   @default("Published")
+
+  createdAt     DateTime @default(now())
+
+  updatedAt     DateTime @updatedAt
+
+}
+
+
+
+model SiteContent {
+
+  id          Int      @id @default(1)
+
+  about       Json     @default("{}")
+
+  vision      Json     @default("{}")
+
+  mission     Json     @default("{}")
+
+  whyChooseUs Json     @default("{}")
+
+  siteInfo    Json     @default("{}")
+
+  updatedAt   DateTime @updatedAt
+
+}
+
+
+
+model ContactInfo {
+
+  id             Int      @id @default(1)
+
+  email          String   @default("")
+
+  phones         String[] @default([])
+
+  address        String   @default("")
+
+  googleMapsLink String   @default("")
+
+  social         Json     @default("{}")
+
+  updatedAt      DateTime @updatedAt
+
+}
+
+
+
+model Settings {
+
+  id              Int      @id @default(1)
+
+  websiteName     String   @default("Prep Up Gwalior")
+
+  logoUrl         String   @default("")
+
+  logoPublicId    String   @default("")
+
+  faviconUrl      String   @default("")
+
+  faviconPublicId String   @default("")
+
+  footerContent   String   @default("")
+
+  enquiryLink     String   @default("")
+
+  enquiryMode     String   @default("panel")
+
+  updatedAt       DateTime @updatedAt
+
+}
+
+
+
+model SiteSeo {
+
+  id                Int      @id @default(1)
+
+  homeTitle         String   @default("")
+
+  homeDescription   String   @default("")
+
+  homeKeywords      String   @default("")
+
+  ogImageUrl        String   @default("")
+
+  googleRating      Float    @default(4.8)
+
+  googleReviewCount Int      @default(0)
+
+  googlePlaceId     String   @default("")
+
+  googleReviewsUrl  String   @default("")
+
+  googleEmbedHtml   String   @default("")
+
+  updatedAt         DateTime @updatedAt
+
+}
+
+
+
+model Media {
+
+  id        String   @id @default(cuid())
+
+  url       String
+
+  publicId  String
+
+  filename  String   @default("")
+
+  folder    String   @default("prep-up-gwalior")
+
+  format    String   @default("")
+
+  bytes     Int      @default(0)
+
+  createdAt DateTime @default(now())
+
+}
+
+
+
+model Activity {
+
+  id        String   @id @default(cuid())
+
+  action    String
+
+  entity    String
+
+  entityId  String   @default("")
+
+  details   String   @default("")
+
+  createdAt DateTime @default(now())
+
+}
+
+
+
+model ResultSlide {
+
+  id            String   @id @default(cuid())
+
+  studentName   String
+
+  exam          String   @default("")
+
+  achievement   String   @default("")
+
+  institute     String   @default("")
+
+  imageUrl      String   @default("")
+
+  imagePublicId String   @default("")
+
+  ctaText       String   @default("Enquiry Now")
+
+  ctaLink       String   @default("")
+
+  sortOrder     Int      @default(0)
+
+  status        String   @default("Published")
+
+  createdAt     DateTime @default(now())
+
+  updatedAt     DateTime @updatedAt
+
+}
+
+
+
+model SiteStat {
+
+  id        String   @id @default(cuid())
+
+  key       String   @unique
+
+  label     String
+
+  value     Int      @default(0)
+
+  suffix    String   @default("+")
+
+  prefix    String   @default("")
+
+  icon      String   @default("Users")
+
+  sortOrder Int      @default(0)
+
+  status    String   @default("Published")
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+}
+
+
+
+model Notification {
+
+  id            String    @id @default(cuid())
+
+  title         String
+
+  category      String    @default("General")
+
+  summary       String    @default("")
+
+  content       String    @default("")
+
+  pdfUrl        String    @default("")
+
+  pdfPublicId   String    @default("")
+
+  externalLink  String    @default("")
+
+  isImportant   Boolean   @default(false)
+
+  publishedAt   DateTime  @default(now())
+
+  sortOrder     Int       @default(0)
+
+  status        String    @default("Published")
+
+  createdAt     DateTime  @default(now())
+
+  updatedAt     DateTime  @updatedAt
+
+}
+
+
+
+model Student {
+
+  id                   String   @id @default(cuid())
+
+  name                 String
+
+  email                String   @unique
+
+  phone                String   @default("")
+
+  password             String
+
+  course               String   @default("")
+
+  batch                String   @default("")
+
+  studentId            String   @unique @default(cuid())
+
+  profilePhotoUrl      String   @default("")
+
+  profilePhotoPublicId String   @default("")
+
+  status               String   @default("Active")
+
+  resetToken           String?
+
+  resetTokenExpiry     DateTime?
+
+  createdAt            DateTime @default(now())
+
+  updatedAt            DateTime @updatedAt
+
+  enrollments          StudentEnrollment[]
+
+  testResults          StudentTestResult[]
+
+
+
+  @@index([phone])
+
+  @@index([status])
+
+  @@index([resetToken])
+
+}
+
+
+
+model StudyMaterial {
+
+  id            String   @id @default(cuid())
+
+  title         String
+
+  description   String   @default("")
+
+  category      String   @default("General")
+
+  subject       String   @default("")
+
+  materialType  String   @default("PDF")
+
+  fileUrl       String   @default("")
+
+  filePublicId  String   @default("")
+
+  externalLink  String   @default("")
+
+  courseId      String   @default("")
+
+  sortOrder     Int      @default(0)
+
+  status        String   @default("Published")
+
+  createdAt     DateTime @default(now())
+
+  updatedAt     DateTime @updatedAt
+
+}
+
+
+
+model StudentEnrollment {
+
+  id         String   @id @default(cuid())
+
+  studentId  String
+
+  courseId   String
+
+  courseName String   @default("")
+
+  status     String   @default("Active")
+
+  enrolledAt DateTime @default(now())
+
+  createdAt  DateTime @default(now())
+
+  updatedAt  DateTime @updatedAt
+
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+
+
+  @@unique([studentId, courseId])
+
+  @@index([studentId])
+
+  @@index([courseId])
+
+}
+
+
+
+model MockTest {
+
+  id          String   @id @default(cuid())
+
+  title       String
+
+  description String   @default("")
+
+  courseId    String   @default("")
+
+  courseName  String   @default("")
+
+  testDate    DateTime?
+
+  durationMin Int      @default(60)
+
+  totalMarks  Int      @default(100)
+
+  status      String   @default("Upcoming")
+
+  externalUrl String   @default("")
+
+  sortOrder   Int      @default(0)
+
+  createdAt   DateTime @default(now())
+
+  updatedAt   DateTime @updatedAt
+
+  results     StudentTestResult[]
+
+
+
+  @@index([status])
+
+  @@index([courseId])
+
+  @@index([testDate])
+
+}
+
+
+
+model StudentTestResult {
+
+  id         String   @id @default(cuid())
+
+  studentId  String
+
+  testId     String
+
+  score      Float?
+
+  maxScore   Float?
+
+  rank       Int?
+
+  percentile Float?
+
+  status     String   @default("Scheduled")
+
+  startedAt  DateTime?
+
+  completedAt DateTime?
+
+  remarks    String   @default("")
+
+  createdAt  DateTime @default(now())
+
+  updatedAt  DateTime @updatedAt
+
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  test       MockTest @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+
+
+  @@unique([studentId, testId])
+
+  @@index([studentId])
+
+  @@index([testId])
+
+  @@index([status])
+
+}
+
