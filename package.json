@@ -11,7 +11,10 @@
     "start": "npm run start --prefix client",
     "seed": "npm run db:push --prefix server && npm run seed --prefix server",
     "db:push": "npm run db:push --prefix server",
-    "lint": "npm run lint --prefix client"
+    "lint": "npm run lint --prefix client",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

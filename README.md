@@ -4,8 +4,10 @@ Monorepo layout:
 
 ```
 prep-up-gwalior/
-├── client/   # Next.js (Vercel)
-└── server/   # Express API (company VPS)
+├── client/              # Next.js (Vercel / Docker)
+├── server/              # Express API (VPS / Docker)
+├── docker-compose.yml   # Postgres + server + client
+└── package.json         # local monorepo scripts
 ```
 
 ## Local development
@@ -39,11 +41,30 @@ Useful scripts:
 
 ## Deploy
 
+### Docker (local / VPS)
+
+```bash
+# build + run Postgres + API + Next.js
+docker compose up --build -d
+
+# site:  http://localhost:3000
+# API:   http://localhost:5000
+# DB:    localhost:5434
+```
+
+Optional seed after first boot:
+
+```bash
+docker compose exec server npm run seed
+```
+
+Upload files persist in the `uploads` Docker volume.
+
 ### Client (Vercel)
 - Set **Root Directory** to `client`
 - Env: `NEXT_PUBLIC_API_URL=https://your-api-domain.com`
 
 ### Server (company VPS)
-- Deploy the `server/` folder
+- Deploy with Docker (`server/Dockerfile`) or run Node directly from `server/`
 - Env: `FRONTEND_URL`, `API_PUBLIC_URL`, `DATABASE_URL`, `JWT_SECRET`, admin credentials
-- Persist `server/uploads/` on disk
+- Persist `uploads/` (volume or disk)
