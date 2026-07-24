@@ -1,10 +1,10 @@
 import PageBanner from "@/components/ui/PageBanner";
 import ContactSection from "@/components/home/ContactSection";
-import { contact } from "@/data/content";
 
 export const metadata = {
   title: "Contact Us",
-  description: `Contact Prep Up Gwalior — ${contact.address}. Call ${contact.phones.join(" or ")}.`,
+  description:
+    "Contact Prep Up Gwalior for admissions, course details, or to visit our center.",
 };
 
 export default function ContactPage() {

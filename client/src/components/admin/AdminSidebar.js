@@ -14,7 +14,6 @@ import {
   Megaphone,
   GraduationCap,
   Sparkles,
-  Phone,
   Images,
   BarChart3,
   Bell,
@@ -39,7 +38,6 @@ const links = [
   { href: "/admin/materials", label: "Study Materials", icon: FolderOpen },
   { href: "/admin/testimonials", label: "Testimonials", icon: MessageSquare },
   { href: "/admin/enquiries", label: "Enquiries", icon: Mail },
-  { href: "/admin/contact", label: "Contact", icon: Phone },
   { href: "/admin/seo", label: "SEO", icon: Sparkles },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];

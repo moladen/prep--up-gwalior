@@ -18,7 +18,18 @@ export default function ContactInfo({ unified = false }) {
       content: "Mon – Sat: 9:00 AM – 7:00 PM",
       href: null,
     },
-  ];
+  ].filter((item) => {
+    if (Array.isArray(item.content)) return item.content.length > 0;
+    return Boolean(item.content);
+  });
+
+  if (!items.length) {
+    return (
+      <div className="premium-card p-7 text-sm text-muted sm:p-8">
+        Contact details will appear here once updated in admin settings.
+      </div>
+    );
+  }
 
   if (unified) {
     return (

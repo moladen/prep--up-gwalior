@@ -64,31 +64,31 @@ export default function NewsUpdatesBar() {
         </div>
 
         <div className="hidden shrink-0 items-center gap-2 sm:flex">
-          <a
-            href={
-              contact.social?.instagram ||
-              "https://www.instagram.com/prepupgwalior/"
-            }
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-white/80 transition hover:bg-white/10 hover:text-brand-accent"
-            aria-label="Instagram"
-          >
-            <InstagramIcon className="h-4 w-4" />
-          </a>
-          <a
-            href={
-              contact.social?.facebook ||
-              "https://www.facebook.com/prepupgwalior/"
-            }
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-white/80 transition hover:bg-white/10 hover:text-brand-accent"
-            aria-label="Facebook"
-          >
-            <FacebookIcon className="h-4 w-4" />
-          </a>
-          <span className="mx-0.5 h-4 w-px bg-white/20" aria-hidden />
+          {contact.social?.instagram ? (
+            <a
+              href={contact.social.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full text-white/80 transition hover:bg-white/10 hover:text-brand-accent"
+              aria-label="Instagram"
+            >
+              <InstagramIcon className="h-4 w-4" />
+            </a>
+          ) : null}
+          {contact.social?.facebook ? (
+            <a
+              href={contact.social.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full text-white/80 transition hover:bg-white/10 hover:text-brand-accent"
+              aria-label="Facebook"
+            >
+              <FacebookIcon className="h-4 w-4" />
+            </a>
+          ) : null}
+          {(contact.social?.instagram || contact.social?.facebook) && (
+            <span className="mx-0.5 h-4 w-px bg-white/20" aria-hidden />
+          )}
           <Link
             href="/notifications"
             className="inline-flex items-center gap-1 pr-5 text-[11px] font-semibold text-white/90 transition hover:text-brand-accent"
