@@ -160,6 +160,7 @@ export default function Navbar() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
+                      onClick={() => setIsOpen(false)}
                       className={`block rounded-xl px-4 py-3 text-sm font-medium ${
                         isActive(link.href)
                           ? "bg-brand-primary-light text-brand-primary"
@@ -170,25 +171,11 @@ export default function Navbar() {
                     </Link>
                   </li>
                 ))}
-                {isHome &&
-                  homeSections.map((id) => (
-                    <li key={id}>
-                      <a
-                        href={`/#${id}`}
-                        className={`block rounded-xl px-4 py-2.5 text-sm font-medium capitalize ${
-                          activeHomeSection === id
-                            ? "bg-brand-primary-light text-brand-primary"
-                            : "text-slate-600 hover:bg-slate-50"
-                        }`}
-                      >
-                        {id}
-                      </a>
-                    </li>
-                  ))}
                 <li className="px-3 pt-2">
                   {student ? (
                     <Link
                       href="/student/dashboard"
+                      onClick={() => setIsOpen(false)}
                       className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-brand-primary"
                     >
                       <UserRound className="h-4 w-4" />
