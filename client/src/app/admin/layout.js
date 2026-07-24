@@ -61,7 +61,6 @@ function PanelShell({ children }) {
     "/admin/materials": "Study Materials",
     "/admin/testimonials": "Testimonials",
     "/admin/enquiries": "Enquiries",
-    "/admin/contact": "Contact Management",
     "/admin/seo": "SEO",
     "/admin/settings": "Settings",
   };

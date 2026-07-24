@@ -1,7 +1,5 @@
-import { contact } from "@/data/content";
-
 function formatWhatsAppNumber(phone) {
-  const digits = phone.replace(/\D/g, "");
+  const digits = String(phone || "").replace(/\D/g, "");
   if (digits.length === 10) return `91${digits}`;
   if (digits.startsWith("91") && digits.length === 12) return digits;
   return digits;
@@ -28,7 +26,8 @@ export function buildEnquiryWhatsAppMessage(form) {
   return lines.join("\n");
 }
 
-export function openWhatsAppEnquiry(form, phone = contact.phones[0]) {
+export function openWhatsAppEnquiry(form, phone) {
+  if (!phone) return;
   const whatsappNumber = formatWhatsAppNumber(phone);
   const text = buildEnquiryWhatsAppMessage(form);
   const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;

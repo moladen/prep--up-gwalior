@@ -40,12 +40,12 @@ export const whyChooseUs = {
 };
 
 export const contact = {
-  address: "First Floor Krishna Tower, Phoolbagh, Gwalior – 474001",
-  phones: ["7007979696", "7773090664", "8878868530"],
-  email: "info@prepupgwalior.com",
+  address: "",
+  phones: [],
+  email: "",
   social: {
-    instagram: "https://www.instagram.com/prepupgwalior/",
-    facebook: "https://www.facebook.com/prepupgwalior/",
+    instagram: "",
+    facebook: "",
   },
 };
 

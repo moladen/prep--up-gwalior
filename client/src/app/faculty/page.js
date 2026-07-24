@@ -42,13 +42,16 @@ export default function FacultyPage() {
         <Container>
           <div className="premium-card mb-10 p-5">
             <div className="relative">
-              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+              <Search
+                className="pointer-events-none absolute left-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted"
+                aria-hidden
+              />
               <input
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by name, subject, or specialization..."
-                className="input-premium pl-10"
+                className="input-premium !pl-11"
               />
             </div>
           </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { api } from "@/lib/api";
 import { useToast } from "@/context/ToastContext";
 import TableSkeleton from "@/components/admin/TableSkeleton";
@@ -11,28 +10,39 @@ const inputClass =
 
 export default function SettingsPage() {
   const { showToast } = useToast();
-  const [websiteName, setWebsiteName] = useState("");
-  const [footerContent, setFooterContent] = useState("");
-  const [logoUrl, setLogoUrl] = useState("");
-  const [faviconUrl, setFaviconUrl] = useState("");
-  const [logoFile, setLogoFile] = useState(null);
-  const [faviconFile, setFaviconFile] = useState(null);
-  const [enquiryLink, setEnquiryLink] = useState("");
-  const [enquiryMode, setEnquiryMode] = useState("panel");
+  const [form, setForm] = useState({
+    address: "",
+    phones: "",
+    facebook: "",
+    instagram: "",
+  });
+  /** Keep other contact fields so save doesn't wipe them */
+  const [extras, setExtras] = useState({
+    email: "",
+    googleMapsLink: "",
+    youtube: "",
+    twitter: "",
+  });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     api
-      .getSettings()
+      .getContactInfo()
       .then((data) => {
-        const s = data.settings || {};
-        setWebsiteName(s.websiteName || "");
-        setFooterContent(s.footerContent || "");
-        setLogoUrl(s.logo?.url || "");
-        setFaviconUrl(s.favicon?.url || "");
-        setEnquiryLink(s.enquiryLink || "");
-        setEnquiryMode(s.enquiryMode || "panel");
+        const c = data.contact || {};
+        setForm({
+          address: c.address || "",
+          phones: (c.phones || []).join(", "),
+          facebook: c.social?.facebook || "",
+          instagram: c.social?.instagram || "",
+        });
+        setExtras({
+          email: c.email || "",
+          googleMapsLink: c.googleMapsLink || "",
+          youtube: c.social?.youtube || "",
+          twitter: c.social?.twitter || "",
+        });
       })
       .catch((err) => showToast(err.message, "error"))
       .finally(() => setLoading(false));
@@ -42,39 +52,21 @@ export default function SettingsPage() {
     e.preventDefault();
     setSaving(true);
     try {
-      const fd = new FormData();
-      fd.append("websiteName", websiteName);
-      fd.append("footerContent", footerContent);
-      fd.append("enquiryLink", enquiryLink);
-      fd.append("enquiryMode", enquiryMode);
-
-      if (logoFile) {
-        fd.append("imageField", "logo");
-        fd.append("file", logoFile);
-        await api.updateSettings(fd);
-      }
-
-      if (faviconFile) {
-        const favFd = new FormData();
-        favFd.append("websiteName", websiteName);
-        favFd.append("footerContent", footerContent);
-        favFd.append("enquiryLink", enquiryLink);
-        favFd.append("enquiryMode", enquiryMode);
-        favFd.append("imageField", "favicon");
-        favFd.append("file", faviconFile);
-        await api.updateSettings(favFd);
-      }
-
-      if (!logoFile && !faviconFile) {
-        await api.updateSettings(fd);
-      }
-
-      const data = await api.getSettings();
-      const s = data.settings || {};
-      setLogoUrl(s.logo?.url || "");
-      setFaviconUrl(s.favicon?.url || "");
-      setLogoFile(null);
-      setFaviconFile(null);
+      await api.updateContactInfo({
+        email: extras.email,
+        googleMapsLink: extras.googleMapsLink,
+        address: form.address,
+        phones: form.phones
+          .split(",")
+          .map((p) => p.trim())
+          .filter(Boolean),
+        social: {
+          facebook: form.facebook,
+          instagram: form.instagram,
+          youtube: extras.youtube,
+          twitter: extras.twitter,
+        },
+      });
       showToast("Settings saved successfully");
     } catch (err) {
       showToast(err.message, "error");
@@ -88,116 +80,53 @@ export default function SettingsPage() {
   return (
     <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-6">
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-bold text-slate-900">General Settings</h2>
+        <h2 className="text-lg font-bold text-slate-900">Contact &amp; Social</h2>
+        <p className="mt-1 text-sm text-slate-500">
+          These details show on the website footer, contact page, and news bar.
+        </p>
         <div className="mt-4 space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium">Website Name</label>
-            <input
-              required
-              value={websiteName}
-              onChange={(e) => setWebsiteName(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium">Footer Content</label>
+            <label className="mb-1 block text-sm font-medium">Address</label>
             <textarea
-              rows={4}
-              value={footerContent}
-              onChange={(e) => setFooterContent(e.target.value)}
+              rows={3}
+              value={form.address}
+              onChange={(e) => setForm({ ...form, address: e.target.value })}
+              placeholder="Institute address..."
               className={inputClass}
-              placeholder="Copyright text or footer description..."
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-bold text-slate-900">Enquiry Settings</h2>
-        <div className="mt-4 space-y-4">
-          <div>
-            <label className="mb-1 block text-sm font-medium">Enquiry Mode</label>
-            <select
-              value={enquiryMode}
-              onChange={(e) => setEnquiryMode(e.target.value)}
-              className={inputClass}
-            >
-              <option value="panel">Panel (on-site form)</option>
-              <option value="link">External link</option>
-            </select>
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium">Enquiry Link</label>
-            <input
-              value={enquiryLink}
-              onChange={(e) => setEnquiryLink(e.target.value)}
-              className={inputClass}
-              placeholder="https://forms.google.com/..."
-            />
-            <p className="mt-1 text-xs text-slate-500">
-              Used when enquiry mode is set to external link.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-bold text-slate-900">Branding</h2>
-        <div className="mt-4 grid gap-6 sm:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-medium">Logo</label>
-            {(logoUrl || logoFile) && (
-              <div className="mb-3 flex h-20 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 p-2">
-                {logoFile ? (
-                  <img
-                    src={URL.createObjectURL(logoFile)}
-                    alt="Logo preview"
-                    className="max-h-full max-w-full object-contain"
-                  />
-                ) : (
-                  <Image
-                    src={logoUrl}
-                    alt="Current logo"
-                    width={120}
-                    height={60}
-                    className="max-h-16 w-auto object-contain"
-                  />
-                )}
-              </div>
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
-              className="w-full text-sm"
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium">Favicon</label>
-            {(faviconUrl || faviconFile) && (
-              <div className="mb-3 flex h-20 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 p-2">
-                {faviconFile ? (
-                  <img
-                    src={URL.createObjectURL(faviconFile)}
-                    alt="Favicon preview"
-                    className="h-12 w-12 object-contain"
-                  />
-                ) : (
-                  <Image
-                    src={faviconUrl}
-                    alt="Current favicon"
-                    width={48}
-                    height={48}
-                    className="h-12 w-12 object-contain"
-                  />
-                )}
-              </div>
-            )}
+            <label className="mb-1 block text-sm font-medium">
+              Phone Number{" "}
+              <span className="font-normal text-slate-400">
+                (comma separated for multiple)
+              </span>
+            </label>
             <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setFaviconFile(e.target.files?.[0] || null)}
-              className="w-full text-sm"
+              value={form.phones}
+              onChange={(e) => setForm({ ...form, phones: e.target.value })}
+              placeholder="7773090664, 8878868530"
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium">Facebook URL</label>
+            <input
+              type="url"
+              value={form.facebook}
+              onChange={(e) => setForm({ ...form, facebook: e.target.value })}
+              placeholder="https://facebook.com/..."
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium">Instagram URL</label>
+            <input
+              type="url"
+              value={form.instagram}
+              onChange={(e) => setForm({ ...form, instagram: e.target.value })}
+              placeholder="https://instagram.com/..."
+              className={inputClass}
             />
           </div>
         </div>

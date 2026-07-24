@@ -134,11 +134,13 @@ export default function Footer() {
               Contact Us
             </h3>
             <address className="space-y-3 text-sm not-italic">
-              <p className="flex gap-2 text-slate-400">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-accent" />
-                {contact.address}
-              </p>
-              {contact.phones.slice(0, 2).map((phone) => (
+              {contact.address ? (
+                <p className="flex gap-2 text-slate-400">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-accent" />
+                  {contact.address}
+                </p>
+              ) : null}
+              {(contact.phones || []).slice(0, 2).map((phone) => (
                 <a
                   key={phone}
                   href={`tel:${phone}`}
@@ -148,39 +150,41 @@ export default function Footer() {
                   {phone}
                 </a>
               ))}
-              <a
-                href={`mailto:${contact.email}`}
-                className="flex items-center gap-2 text-slate-400 transition hover:text-white"
-              >
-                <Mail className="h-4 w-4 text-brand-accent" />
-                {contact.email}
-              </a>
-              <div className="flex gap-2 pt-2">
+              {contact.email ? (
                 <a
-                  href={
-                    contact.social?.instagram ||
-                    "https://www.instagram.com/prepupgwalior/"
-                  }
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
-                  aria-label="Instagram"
+                  href={`mailto:${contact.email}`}
+                  className="flex items-center gap-2 text-slate-400 transition hover:text-white"
                 >
-                  <InstagramIcon className="h-4 w-4" />
+                  <Mail className="h-4 w-4 text-brand-accent" />
+                  {contact.email}
                 </a>
-                <a
-                  href={
-                    contact.social?.facebook ||
-                    "https://www.facebook.com/prepupgwalior/"
-                  }
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
-                  aria-label="Facebook"
-                >
-                  <FacebookIcon className="h-4 w-4" />
-                </a>
-              </div>
+              ) : null}
+              {(contact.social?.instagram || contact.social?.facebook) && (
+                <div className="flex gap-2 pt-2">
+                  {contact.social?.instagram ? (
+                    <a
+                      href={contact.social.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+                      aria-label="Instagram"
+                    >
+                      <InstagramIcon className="h-4 w-4" />
+                    </a>
+                  ) : null}
+                  {contact.social?.facebook ? (
+                    <a
+                      href={contact.social.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+                      aria-label="Facebook"
+                    >
+                      <FacebookIcon className="h-4 w-4" />
+                    </a>
+                  ) : null}
+                </div>
+              )}
             </address>
           </div>
         </div>
