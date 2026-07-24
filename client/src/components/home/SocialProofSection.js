@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
   Bell,
@@ -17,14 +18,33 @@ import PersonImage, { getImageUrl } from "@/components/ui/PersonImage";
 import { getPublicNotifications, getPublicTestimonials } from "@/lib/publicApi";
 import { usePlatform } from "@/context/PlatformContext";
 
-const FALLBACK_TESTIMONIAL = {
-  id: "fb",
-  name: "Riya Saxena",
-  message:
-    "The faculty support and structured mocks helped me stay consistent throughout my prep journey.",
-  course: "CAT 2025",
-  rating: 5,
-};
+const TESTIMONIAL_INTERVAL = 4500;
+const FALLBACK_TESTIMONIALS = [
+  {
+    id: "fb1",
+    name: "Riya Saxena",
+    message:
+      "The faculty support and structured mocks helped me stay consistent throughout my prep journey.",
+    course: "CAT 2025",
+    rating: 5,
+  },
+  {
+    id: "fb2",
+    name: "Ananya Joshi",
+    message:
+      "Prep Up Gwalior helped me build strong fundamentals in legal reasoning. The mock tests and faculty support made all the difference.",
+    course: "CLAT",
+    rating: 5,
+  },
+  {
+    id: "fb3",
+    name: "Aarav Mehta",
+    message:
+      "Doubt sessions and weekly tests kept me on track. The mentors explain every concept clearly.",
+    course: "IPMAT",
+    rating: 5,
+  },
+];
 
 const FALLBACK_NOTIFICATIONS = [
   {
@@ -211,14 +231,27 @@ function NotificationTicker({ items }) {
 
 export default function SocialProofSection() {
   const { seo } = usePlatform();
-  const [testimonial, setTestimonial] = useState(FALLBACK_TESTIMONIAL);
+  const [testimonials, setTestimonials] = useState(FALLBACK_TESTIMONIALS);
+  const [tIndex, setTIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     let active = true;
     getPublicTestimonials()
       .then((data) => {
-        if (active && data?.[0]) setTestimonial(data[0]);
+        if (!active || !Array.isArray(data) || !data.length) return;
+        const mapped = data
+          .map((t, i) => ({
+            id: t.id || t._id || `t-${i}`,
+            name: t.name || t.studentName || "Student",
+            message: t.message || t.quote || "",
+            course: t.course || t.exam || "",
+            rating: t.rating || 5,
+            imageUrl: getImageUrl(t) || t.imageUrl || "",
+          }))
+          .filter((t) => t.message);
+        if (mapped.length) setTestimonials(mapped);
       })
       .catch(() => {});
     getPublicNotifications("limit=12")
@@ -233,9 +266,22 @@ export default function SocialProofSection() {
     };
   }, []);
 
+  useEffect(() => {
+    setTIndex(0);
+  }, [testimonials.length]);
+
+  useEffect(() => {
+    if (paused || testimonials.length <= 1) return;
+    const timer = setInterval(() => {
+      setTIndex((i) => (i + 1) % testimonials.length);
+    }, TESTIMONIAL_INTERVAL);
+    return () => clearInterval(timer);
+  }, [paused, testimonials.length, tIndex]);
+
   const rating = seo?.googleRating || 4.8;
   const reviewCount = seo?.googleReviewCount || 1200;
   const items = notifications.length ? notifications : FALLBACK_NOTIFICATIONS;
+  const testimonial = testimonials[tIndex] || testimonials[0];
 
   return (
     <section
@@ -244,30 +290,66 @@ export default function SocialProofSection() {
     >
       <Container>
         <div className="grid gap-5 lg:grid-cols-3 lg:items-stretch">
-          <article className="rounded-2xl border border-border bg-[#fafbfd] p-6 shadow-sm">
+          <article
+            className="flex flex-col rounded-2xl border border-border bg-[#fafbfd] p-6 shadow-sm"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+          >
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-primary">
               Student Testimonials
             </p>
             <Quote className="mt-4 h-8 w-8 text-brand-primary/30" />
-            <p className="mt-3 text-sm leading-relaxed text-slate-700">
-              &ldquo;{testimonial.message}&rdquo;
-            </p>
-            <div className="mt-5 flex items-center gap-3 border-t border-border pt-4">
-              <div className="relative h-12 w-12 overflow-hidden rounded-full bg-brand-primary-light">
-                <PersonImage
-                  name={testimonial.name}
-                  imageUrl={getImageUrl(testimonial)}
-                  colorIndex={0}
-                  objectPosition="top"
-                />
-              </div>
-              <div>
-                <p className="font-semibold text-[var(--brand-navy)]">
-                  {testimonial.name}
-                </p>
-                <p className="text-xs text-muted">{testimonial.course}</p>
-              </div>
+
+            <div className="relative min-h-[9.5rem] flex-1">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={testimonial.id || tIndex}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  className="absolute inset-0 flex flex-col"
+                >
+                  <p className="mt-3 line-clamp-5 text-sm leading-relaxed text-slate-700">
+                    &ldquo;{testimonial.message}&rdquo;
+                  </p>
+                  <div className="mt-auto flex items-center gap-3 border-t border-border pt-4">
+                    <div className="relative h-12 w-12 overflow-hidden rounded-full bg-brand-primary-light">
+                      <PersonImage
+                        name={testimonial.name}
+                        imageUrl={getImageUrl(testimonial) || testimonial.imageUrl}
+                        colorIndex={tIndex % 6}
+                        objectPosition="top"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-[var(--brand-navy)]">
+                        {testimonial.name}
+                      </p>
+                      <p className="text-xs text-muted">{testimonial.course}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
             </div>
+
+            {testimonials.length > 1 ? (
+              <div className="mt-4 flex justify-center gap-1.5">
+                {testimonials.map((t, i) => (
+                  <button
+                    key={t.id || i}
+                    type="button"
+                    onClick={() => setTIndex(i)}
+                    className={`h-1.5 rounded-full transition-all ${
+                      i === tIndex
+                        ? "w-4 bg-brand-primary"
+                        : "w-1.5 bg-slate-300 hover:bg-slate-400"
+                    }`}
+                    aria-label={`Show testimonial ${i + 1}`}
+                  />
+                ))}
+              </div>
+            ) : null}
           </article>
 
           <article className="flex flex-col items-center justify-center rounded-2xl border border-border bg-[#fafbfd] p-6 text-center shadow-sm">

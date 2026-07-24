@@ -49,7 +49,7 @@ docker compose up --build -d
 
 # site:  http://localhost:3000
 # API:   http://localhost:5000
-# DB:    localhost:5434
+# DB:    localhost:5435
 ```
 
 Optional seed after first boot:
