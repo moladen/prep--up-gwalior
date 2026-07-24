@@ -11,8 +11,10 @@ export default function Home() {
   return (
     <>
       <HashScroll />
-      <Hero />
-      <StatsSection />
+      <div className="flex min-h-svh flex-col bg-white">
+        <Hero />
+        <StatsSection />
+      </div>
       <PopularCourses />
       <ResultsSection />
       <AboutSection />

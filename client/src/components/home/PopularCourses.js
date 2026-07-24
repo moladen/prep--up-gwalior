@@ -41,7 +41,7 @@ export default function PopularCourses() {
   return (
     <section
       id="courses"
-      className="scroll-mt-28 bg-white py-12 sm:py-16 lg:py-20"
+      className="scroll-mt-28 bg-white py-12 sm:py-14 lg:py-16"
     >
       <Container>
         <div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">

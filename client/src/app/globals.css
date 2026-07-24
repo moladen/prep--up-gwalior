@@ -40,8 +40,8 @@
   --surface-2: #e8f0fe;
   --surface-accent: #eef2f8;
 
-  --nav-height: 4.25rem;
-  --news-bar-height: 2.5rem;
+  --nav-height: 3.75rem;
+  --news-bar-height: 2.25rem;
   --header-offset: calc(var(--news-bar-height) + var(--nav-height));
   --site-max-width: 90rem;
   --site-gutter: 1.25rem;
@@ -59,7 +59,7 @@
 
 @media (min-width: 640px) {
   :root {
-    --nav-height: 4.5rem;
+    --nav-height: 4rem;
     --header-offset: calc(var(--news-bar-height) + var(--nav-height));
     --site-gutter: 1.25rem;
   }
@@ -135,17 +135,25 @@ body {
   }
 }
 
+.hero-classroom-frame {
+  box-shadow:
+    0 16px 36px -18px rgba(15, 36, 68, 0.28),
+    0 0 0 1px rgba(15, 36, 68, 0.06);
+}
+
 .hero-classroom-img {
-  filter: brightness(1.03) contrast(1.1) saturate(1.02);
-  animation: hero-kenburns 48s ease-in-out infinite alternate;
-  will-change: transform;
+  filter: brightness(1.02) contrast(1.04) saturate(1.02);
   transform-origin: center center;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .hero-classroom-img {
-    animation: none;
-  }
+.hero-classroom-shade {
+  background: linear-gradient(
+    180deg,
+    rgba(15, 36, 68, 0.04) 0%,
+    transparent 40%,
+    transparent 68%,
+    rgba(15, 36, 68, 0.14) 100%
+  );
 }
 
 .site-header {
@@ -936,8 +944,53 @@ body {
   }
 }
 
+/* Achievers — left to right infinite marquee */
+.achievers-marquee-viewport {
+  position: relative;
+  overflow: hidden;
+  /* soft edges so cards don't look cut */
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+}
+
+.achievers-marquee-track {
+  display: flex;
+  gap: 1rem;
+  will-change: transform;
+  animation-name: achieversMarqueeScroll;
+  animation-duration: var(--achievers-duration, 28s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes achieversMarqueeScroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    /* list duplicated twice, so shifting half equals one loop */
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .notif-ticker-track {
+    animation-duration: 60s;
+  }
+
+  .achievers-marquee-track {
     animation-duration: 60s;
   }
 }
