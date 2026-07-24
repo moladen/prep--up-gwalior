@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, BookOpen, CheckCircle2, Star } from "lucide-react";
 import { useEnrollPanel } from "@/context/EnrollPanelContext";
 import PersonImage, { getImageUrl } from "@/components/ui/PersonImage";
-import { ACHIEVERS } from "@/data/achievers";
 import { getPublicSlides } from "@/lib/publicApi";
 
 const INTERVAL = 4000;
@@ -27,7 +26,7 @@ function normalizeSlide(slide) {
 export default function Hero() {
   const { openEnroll } = useEnrollPanel();
   const [index, setIndex] = useState(0);
-  const [slides, setSlides] = useState(ACHIEVERS);
+  const [slides, setSlides] = useState([]);
 
   useEffect(() => {
     let active = true;
@@ -58,7 +57,6 @@ export default function Hero() {
   }, [goNext, index, slides.length]);
 
   const current = slides[index] || slides[0];
-  if (!current) return null;
 
   return (
     <section className="relative flex w-full flex-1 flex-col justify-center overflow-hidden bg-white pt-[var(--header-offset)]">
@@ -145,73 +143,77 @@ export default function Hero() {
             />
             <div className="hero-classroom-shade pointer-events-none absolute inset-0" aria-hidden />
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={current.id}
-                initial={{ opacity: 0, y: 12, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -8, scale: 0.98 }}
-                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute bottom-3 right-3 z-10 w-[min(100%-1.25rem,280px)] sm:bottom-4 sm:right-4 sm:w-[min(100%-2rem,300px)]"
-              >
-                <div
-                  className="rounded-[16px] border border-white/30 p-3.5 text-white shadow-[0_18px_40px_-14px_rgba(15,36,68,0.65)] backdrop-blur-xl sm:p-4"
-                  style={{
-                    background:
-                      "linear-gradient(145deg, rgba(15,36,68,0.72), rgba(15,36,68,0.5))",
-                  }}
+            {current ? (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={current.id}
+                  initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  className="absolute bottom-3 right-3 z-10 w-[min(100%-1.25rem,280px)] sm:bottom-4 sm:right-4 sm:w-[min(100%-2rem,300px)]"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-white/10 ring-[3px] ring-[#F0C419] sm:h-16 sm:w-16">
-                      <PersonImage
-                        name={current.studentName}
-                        imageUrl={current.imageUrl}
-                        objectPosition="top"
-                        className="!text-xl"
-                      />
+                  <div
+                    className="rounded-[16px] border border-white/30 p-3.5 text-white shadow-[0_18px_40px_-14px_rgba(15,36,68,0.65)] backdrop-blur-xl sm:p-4"
+                    style={{
+                      background:
+                        "linear-gradient(145deg, rgba(15,36,68,0.72), rgba(15,36,68,0.5))",
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-white/10 ring-[3px] ring-[#F0C419] sm:h-16 sm:w-16">
+                        <PersonImage
+                          name={current.studentName}
+                          imageUrl={current.imageUrl}
+                          objectPosition="top"
+                          className="!text-xl"
+                        />
+                      </div>
+                      <div className="min-w-0 space-y-0.5">
+                        <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#F0C419] sm:text-[11px]">
+                          {current.exam}
+                        </p>
+                        <p className="truncate text-[13px] font-semibold leading-snug text-white/90 sm:text-sm">
+                          {current.achievement}
+                        </p>
+                        <p className="truncate text-sm font-black leading-snug tracking-tight text-white sm:text-[15px]">
+                          {current.studentName}
+                        </p>
+                        <p className="truncate text-xs font-medium text-white/60">
+                          {current.institute}
+                        </p>
+                      </div>
                     </div>
-                    <div className="min-w-0 space-y-0.5">
-                      <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#F0C419] sm:text-[11px]">
-                        {current.exam}
-                      </p>
-                      <p className="truncate text-[13px] font-semibold leading-snug text-white/90 sm:text-sm">
-                        {current.achievement}
-                      </p>
-                      <p className="truncate text-sm font-black leading-snug tracking-tight text-white sm:text-[15px]">
-                        {current.studentName}
-                      </p>
-                      <p className="truncate text-xs font-medium text-white/60">
-                        {current.institute}
-                      </p>
+                    <div className="mt-2.5 flex gap-1 border-t border-white/15 pt-2.5">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className="h-3.5 w-3.5 fill-[#F0C419] text-[#F0C419]"
+                        />
+                      ))}
                     </div>
                   </div>
-                  <div className="mt-2.5 flex gap-1 border-t border-white/15 pt-2.5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-3.5 w-3.5 fill-[#F0C419] text-[#F0C419]"
-                      />
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                </motion.div>
+              </AnimatePresence>
+            ) : null}
 
-            <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-2">
-              {slides.map((s, i) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => setIndex(i)}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    i === index
-                      ? "w-5 bg-brand-primary shadow-sm"
-                      : "w-2 bg-white/75 ring-1 ring-black/10 hover:bg-white"
-                  }`}
-                  aria-label={`Show ${s.studentName}`}
-                />
-              ))}
-            </div>
+            {slides.length > 1 ? (
+              <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-2">
+                {slides.map((s, i) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => setIndex(i)}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      i === index
+                        ? "w-5 bg-brand-primary shadow-sm"
+                        : "w-2 bg-white/75 ring-1 ring-black/10 hover:bg-white"
+                    }`}
+                    aria-label={`Show ${s.studentName}`}
+                  />
+                ))}
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
