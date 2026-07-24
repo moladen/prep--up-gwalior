@@ -5,16 +5,11 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 import Container from "@/components/ui/Container";
 import { getImageUrl } from "@/components/ui/PersonImage";
-import { ACHIEVERS } from "@/data/achievers";
 import { getPublicResults } from "@/lib/publicApi";
 
-const FALLBACK = ACHIEVERS.map((a, i) => ({
-  ...a,
-  rank: i + 1,
-}));
-
 export default function ResultsSection() {
-  const [results, setResults] = useState(FALLBACK);
+  const [results, setResults] = useState([]);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -26,20 +21,23 @@ export default function ResultsSection() {
           studentName: r.studentName,
           exam: r.exam,
           institute: r.score || r.institute || "",
-          imageUrl: getImageUrl(r) || "/students/achievers/mohit-kushwah.webp",
-          quote:
-            r.quote || "Hard work and the right guidance made the difference.",
+          imageUrl: getImageUrl(r) || "",
+          quote: r.quote || "",
           rank: i + 1,
         }));
-        setResults(mapped.length ? mapped : FALLBACK);
+        if (mapped.length) setResults(mapped);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => {
+        if (active) setReady(true);
+      });
     return () => {
       active = false;
     };
   }, []);
 
-  // Infinite left-to-right marquee: duplicate list and shift by ~50%.
+  if (!ready || !results.length) return null;
+
   const loop = [...results, ...results];
   const durationSec = Math.max(results.length, 4) * 4;
 
@@ -58,14 +56,14 @@ export default function ResultsSection() {
               Real Results. Real Stories.
             </h2>
           </div>
-            <div className="flex items-center gap-2">
-              <Link
-                href="/results"
-                className="ml-0 text-sm font-semibold text-brand-primary hover:underline"
-              >
-                View All Results
-              </Link>
-            </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/results"
+              className="ml-0 text-sm font-semibold text-brand-primary hover:underline"
+            >
+              View All Results
+            </Link>
+          </div>
         </div>
 
         <div className="relative">
@@ -78,20 +76,19 @@ export default function ResultsSection() {
               {loop.map((item, idx) => (
                 <article
                   key={`${item.id}-${idx}`}
-                  className="group relative shrink-0 w-[260px] sm:w-[280px] md:w-[300px] flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-brand-primary/30 hover:shadow-[var(--shadow-premium)]"
+                  className="group relative flex w-[260px] shrink-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-brand-primary/30 hover:shadow-[var(--shadow-premium)] sm:w-[280px] md:w-[300px]"
                 >
                   <div className="relative aspect-[3/3.2] w-full overflow-hidden bg-brand-primary-light">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={
-                        getImageUrl(item) ||
-                        "/students/achievers/mohit-kushwah.webp"
-                      }
-                      alt={item.studentName}
-                      className="absolute inset-0 h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.03]"
-                      loading="lazy"
-                      decoding="async"
-                    />
+                    {item.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={item.imageUrl}
+                        alt={item.studentName}
+                        className="absolute inset-0 h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.03]"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : null}
                     <span className="absolute left-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-brand-primary text-xs font-bold text-white shadow-md">
                       {item.rank || 1}
                     </span>
@@ -107,11 +104,11 @@ export default function ResultsSection() {
                     <p className="mt-0.5 text-xs text-muted">
                       {item.institute || item.score}
                     </p>
-                    <p className="mt-2 line-clamp-2 flex-1 text-[13px] italic leading-snug text-slate-600">
-                      &ldquo;
-                      {item.quote || "Focused mentoring made the difference."}
-                      &rdquo;
-                    </p>
+                    {item.quote ? (
+                      <p className="mt-2 line-clamp-2 flex-1 text-[13px] italic leading-snug text-slate-600">
+                        &ldquo;{item.quote}&rdquo;
+                      </p>
+                    ) : null}
                     <div className="mt-2.5 flex gap-0.5">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <Star

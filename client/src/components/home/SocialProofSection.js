@@ -19,32 +19,6 @@ import { getPublicNotifications, getPublicTestimonials } from "@/lib/publicApi";
 import { usePlatform } from "@/context/PlatformContext";
 
 const TESTIMONIAL_INTERVAL = 4500;
-const FALLBACK_TESTIMONIALS = [
-  {
-    id: "fb1",
-    name: "Riya Saxena",
-    message:
-      "The faculty support and structured mocks helped me stay consistent throughout my prep journey.",
-    course: "CAT 2025",
-    rating: 5,
-  },
-  {
-    id: "fb2",
-    name: "Ananya Joshi",
-    message:
-      "Prep Up Gwalior helped me build strong fundamentals in legal reasoning. The mock tests and faculty support made all the difference.",
-    course: "CLAT",
-    rating: 5,
-  },
-  {
-    id: "fb3",
-    name: "Aarav Mehta",
-    message:
-      "Doubt sessions and weekly tests kept me on track. The mentors explain every concept clearly.",
-    course: "IPMAT",
-    rating: 5,
-  },
-];
 
 const FALLBACK_NOTIFICATIONS = [
   {
@@ -231,7 +205,7 @@ function NotificationTicker({ items }) {
 
 export default function SocialProofSection() {
   const { seo } = usePlatform();
-  const [testimonials, setTestimonials] = useState(FALLBACK_TESTIMONIALS);
+  const [testimonials, setTestimonials] = useState([]);
   const [tIndex, setTIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -301,36 +275,44 @@ export default function SocialProofSection() {
             <Quote className="mt-4 h-8 w-8 text-brand-primary/30" />
 
             <div className="relative min-h-[9.5rem] flex-1">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={testimonial.id || tIndex}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                  className="absolute inset-0 flex flex-col"
-                >
-                  <p className="mt-3 line-clamp-5 text-sm leading-relaxed text-slate-700">
-                    &ldquo;{testimonial.message}&rdquo;
-                  </p>
-                  <div className="mt-auto flex items-center gap-3 border-t border-border pt-4">
-                    <div className="relative h-12 w-12 overflow-hidden rounded-full bg-brand-primary-light">
-                      <PersonImage
-                        name={testimonial.name}
-                        imageUrl={getImageUrl(testimonial) || testimonial.imageUrl}
-                        colorIndex={tIndex % 6}
-                        objectPosition="top"
-                      />
+              {testimonial ? (
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={testimonial.id || tIndex}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute inset-0 flex flex-col"
+                  >
+                    <p className="mt-3 line-clamp-5 text-sm leading-relaxed text-slate-700">
+                      &ldquo;{testimonial.message}&rdquo;
+                    </p>
+                    <div className="mt-auto flex items-center gap-3 border-t border-border pt-4">
+                      <div className="relative h-12 w-12 overflow-hidden rounded-full bg-brand-primary-light">
+                        <PersonImage
+                          name={testimonial.name}
+                          imageUrl={
+                            getImageUrl(testimonial) || testimonial.imageUrl
+                          }
+                          colorIndex={tIndex % 6}
+                          objectPosition="top"
+                        />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-[var(--brand-navy)]">
+                          {testimonial.name}
+                        </p>
+                        <p className="text-xs text-muted">{testimonial.course}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-[var(--brand-navy)]">
-                        {testimonial.name}
-                      </p>
-                      <p className="text-xs text-muted">{testimonial.course}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
+                  </motion.div>
+                </AnimatePresence>
+              ) : (
+                <p className="mt-6 text-sm text-slate-500">
+                  Student testimonials will appear here once published.
+                </p>
+              )}
             </div>
 
             {testimonials.length > 1 ? (
